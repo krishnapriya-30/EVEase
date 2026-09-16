@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Owner Dashboard - EVEase{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid dashboard-section">
+    <div class="container">
+
+        <!-- Welcome Section -->
+        <div class="dashboard-welcome mb-4">
+            <div>
+                <h2>Welcome back, {{ owner_name }} 👋</h2>
+                <p>Manage your EV service from one place.</p>
+            </div>
+
+            <a href="/logout" class="btn btn-evease-outline">
+                Logout
+            </a>
+        </div>
+
+
+   <!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+
+    <!-- My Vehicles -->
+    <div class="col-md-6 col-lg-3">
+        <a href="/my-vehicles" class="dashboard-card-link">
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    🚗
+                </div>
+
+                <div>
+                    <h6>My Vehicles</h6>
+                    <h3>{{ vehicle_count }}</h3>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Total Bookings -->
+    <div class="col-md-6 col-lg-3">
+        <div class="dashboard-card">
+            <div class="dashboard-card-icon">
+                🔧
+            </div>
+
+            <div>
+                <h6>Total Bookings</h6>
+                <h3>{{ booking_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Services -->
+    <div class="col-md-6 col-lg-3">
+        <div class="dashboard-card">
+            <div class="dashboard-card-icon">
+                ⏳
+            </div>
+
+            <div>
+                <h6>Pending Services</h6>
+                <h3>{{ pending_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Payments -->
+    <div class="col-md-6 col-lg-3">
+        <div class="dashboard-card">
+            <div class="dashboard-card-icon">
+                💳
+            </div>
+
+            <div>
+                <h6>Pending Payments</h6>
+                <h3>{{ pending_payment_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+        <!-- Quick Actions -->
+        <div class="dashboard-panel mb-4">
+
+            <h4>Quick Actions</h4>
+            <p class="text-muted">
+                Quickly access your most important EV services.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+
+                <a href="#" class="btn btn-evease">
+                    + Book a Service
+                </a>
+
+                <a href="/add-vehicle" class="btn btn-evease-outline">
+                    🚗 Add Vehicle
+                </a>
+
+                <a href="#" class="btn btn-evease-outline">
+                    📋 My Bookings
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- Recent Bookings -->
+        <div class="dashboard-panel">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div>
+                    <h4>Recent Service Bookings</h4>
+                    <p class="text-muted mb-0">
+                        Your latest EV service requests.
+                    </p>
+                </div>
+
+                <a href="#" class="login-link">
+                    View All
+                </a>
+
+            </div>
+
+
+            {% if recent_bookings %}
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Booking</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for booking in recent_bookings %}
+
+                        <tr>
+                            <td>
+                                #{{ booking.id }}
+                            </td>
+
+                            <td>
+                                {{ booking.service_type }}
+                            </td>
+
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ booking.status }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ booking.created_at }}
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-dashboard">
+
+                <div class="empty-dashboard-icon">
+                    📋
+                </div>
+
+                <h5>No service bookings yet</h5>
+
+                <p class="text-muted">
+                    Your service bookings will appear here.
+                </p>
+
+                <a href="#" class="btn btn-evease">
+                    Book Your First Service
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Add Vehicle - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="registration-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+
+                <div class="registration-card">
+
+                    <div class="registration-icon">
+                        🚗
+                    </div>
+
+                    <h2 class="text-center mb-2">
+                        Add Your Vehicle
+                    </h2>
+
+                    <p class="text-center text-muted mb-4">
+                        Add your EV to manage its service easily.
+                    </p>
+
+                    <form method="POST" action="/add-vehicle">
+
+                        <!-- Vehicle Number -->
+                        <div class="mb-3">
+                            <label for="vehicle_number" class="form-label">
+                                Vehicle Registration Number
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="vehicle_number"
+                                name="vehicle_number"
+                                placeholder="e.g. KL08AB1234"
+                                required
+                            >
+                        </div>
+
+                        <!-- Brand -->
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">
+                                Vehicle Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="brand"
+                                name="brand"
+                                placeholder="e.g. Tata, MG, Ather"
+                                required
+                            >
+                        </div>
+
+                        <!-- Model -->
+                        <div class="mb-3">
+                            <label for="model" class="form-label">
+                                Vehicle Model
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="model"
+                                name="model"
+                                placeholder="e.g. Nexon EV, ZS EV, 450X"
+                                required
+                            >
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div class="mb-3">
+                            <label for="vehicle_type" class="form-label">
+                                Vehicle Type
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="vehicle_type"
+                                name="vehicle_type"
+                                required
+                            >
+                                <option value="" selected disabled>
+                                    Select vehicle type
+                                </option>
+
+                                <option value="2-Wheeler">
+                                    2-Wheeler
+                                </option>
+
+                                <option value="4-Wheeler">
+                                    4-Wheeler
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Year -->
+                        <div class="mb-3">
+                            <label for="year" class="form-label">
+                                Manufacturing Year
+                            </label>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="year"
+                                name="year"
+                                min="2000"
+                                max="2030"
+                                placeholder="e.g. 2024"
+                            >
+                        </div>
+
+                        <!-- Battery Capacity -->
+                        <div class="mb-3">
+                            <label for="battery_capacity" class="form-label">
+                                Battery Capacity
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="battery_capacity"
+                                name="battery_capacity"
+                                placeholder="e.g. 40.5 kWh"
+                            >
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid mt-4">
+                            <button
+                                type="submit"
+                                class="btn btn-evease"
+                            >
+                                Add Vehicle
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="/dashboard" class="login-link">
+                            ← Back to Dashboard
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

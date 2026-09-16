@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Login - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-wrapper">
+
+            <!-- Left Branding Panel -->
+            <div class="auth-brand-panel">
+
+                <div class="auth-brand-logo">
+                    <span class="auth-brand-icon">⚡</span>
+                    <span>EVEase</span>
+                </div>
+
+                <div class="auth-brand-content">
+
+                    <span class="auth-eyebrow">
+                        WELCOME BACK
+                    </span>
+
+                    <h1>
+                        Your EV.
+                        <span>Your Service.</span>
+                        <span>One Platform.</span>
+                    </h1>
+
+                    <p>
+                        Access your EVEase dashboard and stay connected
+                        with your electric vehicle service journey from
+                        booking to delivery.
+                    </p>
+
+                    <div class="auth-features">
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">📋</div>
+                            <div>
+                                <strong>Easy Service Booking</strong>
+                                <span>Book and manage your EV services</span>
+                            </div>
+                        </div>
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">📍</div>
+                            <div>
+                                <strong>Track Your Vehicle</strong>
+                                <span>Stay informed throughout the service</span>
+                            </div>
+                        </div>
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">🔋</div>
+                            <div>
+                                <strong>EV Service Records</strong>
+                                <span>Keep your vehicle information organized</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="auth-brand-footer">
+                    Smart EV service management
+                </div>
+
+            </div>
+
+
+            <!-- Login Form Panel -->
+            <div class="auth-form-panel">
+
+                <div class="auth-form-header">
+
+                    <div class="auth-mobile-logo">
+                        <span>⚡</span> EVEase
+                    </div>
+
+                    <h2>Welcome back</h2>
+
+                    <p>
+                        Login to access your EVEase dashboard.
+                    </p>
+
+                </div>
+
+
+                <form method="POST" action="/login">
+
+                    <!-- Email -->
+                    <div class="auth-field">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <div class="auth-input-wrapper">
+
+                            <span class="auth-input-icon">✉</span>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Password -->
+                    <div class="auth-field">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="auth-input-wrapper">
+
+                            <span class="auth-input-icon">🔒</span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="auth-password-toggle"
+                                onclick="togglePassword('password', this)"
+                                aria-label="Show password"
+                            >
+                                👁
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Login Button -->
+                    <button
+                        type="submit"
+                        class="auth-submit-btn"
+                    >
+                        Login to EVEase
+                        <span>→</span>
+                    </button>
+
+                </form>
+
+
+                <div class="auth-divider">
+                    <span>New to EVEase?</span>
+                </div>
+
+
+                <a
+                    href="/register"
+                    class="auth-secondary-btn"
+                >
+                    Create an Account
+                </a>
+
+
+                <p class="auth-terms">
+                    Securely manage your electric vehicle service
+                    through the EVEase platform.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<script>
+function togglePassword(fieldId, button) {
+
+    const field = document.getElementById(fieldId);
+
+    if (field.type === "password") {
+        field.type = "text";
+        button.textContent = "🙈";
+        button.setAttribute("aria-label", "Hide password");
+    } else {
+        field.type = "password";
+        button.textContent = "👁";
+        button.setAttribute("aria-label", "Show password");
+    }
+}
+</script>
+
+{% endblock %}

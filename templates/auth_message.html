@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="auth-result-section">
+
+    <div class="container">
+
+        <div class="auth-result-card">
+
+            <div class="auth-result-icon">
+                ✓
+            </div>
+
+            <div class="auth-result-content">
+
+                <span class="auth-result-eyebrow">
+                    EVEASE
+                </span>
+
+                <h1>
+                    {{ title }}
+                </h1>
+
+                <p class="auth-result-message">
+                    {{ message }}
+                </p>
+
+                {% if name %}
+                <p class="auth-result-user">
+                    Welcome back, <strong>{{ name }}</strong>!
+                </p>
+                {% endif %}
+
+                {% if email %}
+                <div class="auth-result-info">
+                    <span>Account Email</span>
+                    <strong>{{ email }}</strong>
+                </div>
+                {% endif %}
+
+                <a href="{{ button_url }}" class="btn btn-evease auth-result-btn">
+                    {{ button_text }}
+                    <span>→</span>
+                </a>
+
+            </div>
+
+            <div class="auth-result-footer">
+                Smart EV service management
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-wrapper">
+
+            <!-- Left Branding Panel -->
+            <div class="auth-brand-panel">
+
+                <div class="auth-brand-logo">
+                    <span class="auth-brand-icon">⚡</span>
+                    <span>EVEase</span>
+                </div>
+
+                <div class="auth-brand-content">
+                    <span class="auth-eyebrow">
+                        DOORSTEP EV SERVICE
+                    </span>
+
+                    <h1>
+                        Service at your Doorstep.
+                        <span>Peace of Mind in your Hands.</span>
+                    </h1>
+
+                    <p>
+                        Manage your electric vehicle service from anywhere.
+                        Book services, track your vehicle, view service updates
+                        and manage everything in one place.
+                    </p>
+
+                    <div class="auth-features">
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">🚗</div>
+                            <div>
+                                <strong>Doorstep Service</strong>
+                                <span>Convenient vehicle pickup and delivery</span>
+                            </div>
+                        </div>
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">🔋</div>
+                            <div>
+                                <strong>EV Care</strong>
+                                <span>Professional electric vehicle servicing</span>
+                            </div>
+                        </div>
+
+                        <div class="auth-feature">
+                            <div class="auth-feature-icon">📍</div>
+                            <div>
+                                <strong>Service Tracking</strong>
+                                <span>Stay updated throughout the service journey</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="auth-brand-footer">
+                    Smart EV service management
+                </div>
+
+            </div>
+
+
+            <!-- Registration Form -->
+            <div class="auth-form-panel">
+
+                <div class="auth-form-header">
+
+                    <div class="auth-mobile-logo">
+                        <span>⚡</span> EVEase
+                    </div>
+
+                    <h2>Create your account</h2>
+
+                    <p>
+                        Join EVEase and manage your EV service with ease.
+                    </p>
+
+                </div>
+
+
+                <form method="POST" action="/register">
+
+                    <!-- Full Name -->
+                    <div class="auth-field">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">👤</span>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="auth-field">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">✉</span>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                autocomplete="email"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- Phone -->
+                    <div class="auth-field">
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">📱</span>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="Enter your phone number"
+                                autocomplete="tel"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- Password -->
+                    <div class="auth-field">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">🔒</span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="auth-password-toggle"
+                                onclick="togglePassword('password', this)"
+                                aria-label="Show password"
+                            >
+                                👁
+                            </button>
+
+                        </div>
+
+                        <small class="auth-helper">
+                            Use at least 6 characters.
+                        </small>
+
+                    </div>
+
+
+                    <!-- Confirm Password -->
+                    <div class="auth-field">
+
+                        <label for="confirm_password">
+                            Confirm Password
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">🔐</span>
+
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                placeholder="Re-enter your password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="auth-password-toggle"
+                                onclick="togglePassword('confirm_password', this)"
+                                aria-label="Show password"
+                            >
+                                👁
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Submit -->
+                    <button
+                        type="submit"
+                        class="auth-submit-btn"
+                    >
+                        Create Account
+                        <span>→</span>
+                    </button>
+
+                </form>
+
+
+                <div class="auth-divider">
+                    <span>Already registered?</span>
+                </div>
+
+
+                <a
+                    href="/login"
+                    class="auth-secondary-btn"
+                >
+                    Login to EVEase
+                </a>
+
+
+                <p class="auth-terms">
+                    By creating an account, you agree to use EVEase
+                    responsibly for your vehicle service needs.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<script>
+function togglePassword(fieldId, button) {
+
+    const field = document.getElementById(fieldId);
+
+    if (field.type === "password") {
+        field.type = "text";
+        button.textContent = "🙈";
+        button.setAttribute("aria-label", "Hide password");
+    } else {
+        field.type = "password";
+        button.textContent = "👁";
+        button.setAttribute("aria-label", "Show password");
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Vehicle - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="registration-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+
+                <div class="registration-card">
+
+                    <div class="registration-icon">
+                        🚗
+                    </div>
+
+                    <h2 class="text-center mb-2">
+                        Edit Vehicle
+                    </h2>
+
+                    <p class="text-center text-muted mb-4">
+                        Update your electric vehicle details.
+                    </p>
+
+                    <form method="POST">
+
+                        <!-- Vehicle Number -->
+                        <div class="mb-3">
+                            <label for="vehicle_number" class="form-label">
+                                Vehicle Registration Number
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="vehicle_number"
+                                name="vehicle_number"
+                                value="{{ vehicle.vehicle_number }}"
+                                required
+                            >
+                        </div>
+
+                        <!-- Brand -->
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">
+                                Vehicle Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="brand"
+                                name="brand"
+                                value="{{ vehicle.brand }}"
+                                required
+                            >
+                        </div>
+
+                        <!-- Model -->
+                        <div class="mb-3">
+                            <label for="model" class="form-label">
+                                Vehicle Model
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="model"
+                                name="model"
+                                value="{{ vehicle.model }}"
+                                required
+                            >
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div class="mb-3">
+                            <label for="vehicle_type" class="form-label">
+                                Vehicle Type
+                            </label>
+
+                            <select
+                                class="form-select"
+                                id="vehicle_type"
+                                name="vehicle_type"
+                                required
+                            >
+                                <option
+                                    value="2-Wheeler"
+                                    {% if vehicle.vehicle_type == "2-Wheeler" %}selected{% endif %}
+                                >
+                                    2-Wheeler
+                                </option>
+
+                                <option
+                                    value="4-Wheeler"
+                                    {% if vehicle.vehicle_type == "4-Wheeler" %}selected{% endif %}
+                                >
+                                    4-Wheeler
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Manufacturing Year -->
+                        <div class="mb-3">
+                            <label for="year" class="form-label">
+                                Manufacturing Year
+                            </label>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="year"
+                                name="year"
+                                value="{{ vehicle.year or '' }}"
+                                min="2000"
+                                max="2030"
+                            >
+                        </div>
+
+                        <!-- Battery Capacity -->
+                        <div class="mb-3">
+                            <label for="battery_capacity" class="form-label">
+                                Battery Capacity
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="battery_capacity"
+                                name="battery_capacity"
+                                value="{{ vehicle.battery_capacity or '' }}"
+                            >
+                        </div>
+
+                        <!-- Update -->
+                        <div class="d-grid mt-4">
+                            <button
+                                type="submit"
+                                class="btn btn-evease"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="/my-vehicles" class="login-link">
+                            ← Back to My Vehicles
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
