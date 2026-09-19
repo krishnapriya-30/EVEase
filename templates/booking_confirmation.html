@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed | EVEase{% endblock %}
+
+{% block content %}
+
+<section class="booking-confirmation-section">
+
+    <div class="container">
+
+        <div class="booking-confirmation-card">
+
+            <!-- SUCCESS ICON -->
+
+            <div class="booking-success-icon">
+                ✓
+            </div>
+
+            <span class="booking-confirmation-eyebrow">
+                EVEASE
+            </span>
+
+            <h1>Booking Confirmed!</h1>
+
+            <p class="booking-confirmation-message">
+                Your service booking has been created successfully.
+                Our team will review your request and update the service status.
+            </p>
+
+            <!-- BOOKING REFERENCE -->
+
+            <div class="booking-reference-box">
+
+                <span>Booking Reference</span>
+
+                <strong>
+                    {{ booking.booking_reference }}
+                </strong>
+
+            </div>
+
+
+            <!-- BOOKING DETAILS -->
+
+            <div class="booking-confirmation-details">
+
+                <div class="confirmation-detail">
+
+                    <span class="detail-label">
+                        Vehicle
+                    </span>
+
+                    <strong>
+                        {{ booking.brand }} {{ booking.model }}
+                    </strong>
+
+                    <small>
+                        {{ booking.vehicle_number }}
+                    </small>
+
+                </div>
+
+
+                <div class="confirmation-detail">
+
+                    <span class="detail-label">
+                        Service
+                    </span>
+
+                    <strong>
+                        {{ booking.service_type }}
+                    </strong>
+
+                </div>
+
+
+                <div class="confirmation-detail">
+
+                    <span class="detail-label">
+                        Preferred Date
+                    </span>
+
+                    <strong>
+                        {{ booking.preferred_date.strftime('%d %B %Y') }}
+                    </strong>
+
+                </div>
+
+
+                <div class="confirmation-detail">
+
+                    <span class="detail-label">
+                        Preferred Time
+                    </span>
+
+                    <strong>
+                        {{ booking.preferred_time }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="booking-status-box">
+
+                <span class="booking-status-dot"></span>
+
+                <div>
+
+                    <span class="detail-label">
+                        Current Status
+                    </span>
+
+                    <strong>
+                        {{ booking.status }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- NOTICE -->
+
+            <div class="booking-confirmation-notice">
+
+                <span>i</span>
+
+                <p>
+                    Your booking is currently <strong>Pending</strong>.
+                    The service team will verify your request before
+                    the service process begins.
+                </p>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="booking-confirmation-actions">
+
+                <a
+                    href="/my-bookings"
+                    class="btn btn-evease"
+                >
+                    View My Bookings
+                </a>
+
+                <a
+                    href="/dashboard"
+                    class="btn btn-evease-outline"
+                >
+                    Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

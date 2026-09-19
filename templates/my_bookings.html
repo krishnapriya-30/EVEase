@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings | EVEase{% endblock %}
+
+{% block content %}
+
+<section class="my-bookings-section">
+
+    <div class="container">
+
+        <div class="my-bookings-header">
+
+            <div>
+                <span class="my-bookings-eyebrow">
+                    EVEASE
+                </span>
+
+                <h1>My Bookings</h1>
+
+                <p>
+                    View and track your EV service bookings in one place.
+                </p>
+            </div>
+
+            <a href="/book-service" class="btn btn-evease">
+                + Book a Service
+            </a>
+
+        </div>
+
+
+        {% if bookings %}
+
+            <div class="booking-list">
+
+                {% for booking in bookings %}
+
+                    <div class="booking-card">
+
+                        <div class="booking-card-top">
+
+                            <div>
+                                <span class="booking-reference-label">
+                                    Booking Reference
+                                </span>
+
+                                <h3>
+                                    {{ booking.booking_reference }}
+                                </h3>
+                            </div>
+
+                            <span class="booking-status">
+                                {{ booking.status }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="booking-card-details">
+
+                            <div class="booking-detail">
+
+                                <span class="booking-detail-label">
+                                    Vehicle
+                                </span>
+
+                                <strong>
+                                    {{ booking.brand }} {{ booking.model }}
+                                </strong>
+
+                                <small>
+                                    {{ booking.vehicle_number }}
+                                </small>
+
+                            </div>
+
+
+                            <div class="booking-detail">
+
+                                <span class="booking-detail-label">
+                                    Service
+                                </span>
+
+                                <strong>
+                                    {{ booking.service_type }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="booking-detail">
+
+                                <span class="booking-detail-label">
+                                    Preferred Date
+                                </span>
+
+                                <strong>
+                                    {{ booking.preferred_date.strftime('%d %B %Y') }}
+                                </strong>
+
+                            </div>
+
+
+                            <div class="booking-detail">
+
+                                <span class="booking-detail-label">
+                                    Preferred Time
+                                </span>
+
+                                <strong>
+                                    {{ booking.preferred_time }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-card-footer">
+
+                            <span class="booking-created">
+                                Booked on
+                                {{ booking.created_at.strftime('%d %B %Y') }}
+                            </span>
+
+                            <a
+                               href="/dashboard"
+                               class="btn btn-evease-outline"
+                             >
+                               Back to Dashboard
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-bookings">
+
+                <div class="empty-bookings-icon">
+                    📋
+                </div>
+
+                <h2>No Bookings Yet</h2>
+
+                <p>
+                    You haven't created any service bookings yet.
+                    Book your first EV service to get started.
+                </p>
+
+                <a href="/book-service" class="btn btn-evease">
+                    + Book a Service
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

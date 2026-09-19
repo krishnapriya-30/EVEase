@@ -9,13 +9,19 @@
 
         <div class="booking-header">
             <span class="booking-eyebrow">EVEASE SERVICE BOOKING</span>
+
             <h1>Book a Service</h1>
+
             <p>
                 Schedule doorstep service for your EV in a few simple steps.
             </p>
         </div>
 
+
+        <!-- BOOKING PROGRESS -->
+
         <div class="booking-progress">
+
             <div class="booking-step active">
                 <span>1</span>
                 <small>Vehicle</small>
@@ -23,42 +29,53 @@
 
             <div class="booking-line"></div>
 
-            <div class="booking-step">
+            <div class="booking-step active">
                 <span>2</span>
                 <small>Service</small>
             </div>
 
             <div class="booking-line"></div>
 
-            <div class="booking-step">
+            <div class="booking-step active">
                 <span>3</span>
                 <small>Schedule</small>
             </div>
 
             <div class="booking-line"></div>
 
-            <div class="booking-step">
+            <div class="booking-step active">
                 <span>4</span>
                 <small>Pickup</small>
             </div>
 
             <div class="booking-line"></div>
 
-            <div class="booking-step">
+            <div class="booking-step active">
                 <span>5</span>
                 <small>Confirm</small>
             </div>
+
         </div>
+
+
+        <!-- STEP 1: SELECT VEHICLE -->
 
         <div class="booking-card">
 
             <div class="booking-card-header">
-                <span class="booking-card-number">STEP 1</span>
+
+                <span class="booking-card-number">
+                    STEP 1
+                </span>
+
                 <h2>Select Your Vehicle</h2>
+
                 <p>
                     Choose the EV you want to book for service.
                 </p>
+
             </div>
+
 
             <div class="booking-body">
 
@@ -68,29 +85,667 @@
                         Your Vehicle
                     </label>
 
-                    <select class="form-select booking-select">
-                        <option selected disabled>
+                    {% if vehicles %}
+
+                    <select
+                        class="form-select booking-select"
+                        id="vehicleSelect"
+                    >
+
+                        <option selected disabled value="">
                             Select your vehicle
                         </option>
 
-                        <option>
-                            KL08AB1234 — Tata Nexon EV
+                        {% for vehicle in vehicles %}
+
+                        <option
+                            value="{{ vehicle.id }}"
+                            data-number="{{ vehicle.vehicle_number }}"
+                            data-brand="{{ vehicle.brand }}"
+                            data-model="{{ vehicle.model }}"
+                            data-type="{{ vehicle.vehicle_type }}"
+                        >
+                            {{ vehicle.vehicle_number }} —
+                            {{ vehicle.brand }} {{ vehicle.model }}
                         </option>
+
+                        {% endfor %}
 
                     </select>
 
                     <p class="booking-help">
                         Don't see your vehicle?
-                        <a href="/add-vehicle">Add a new vehicle</a>
+
+                        <a href="/add-vehicle">
+                            Add a new vehicle
+                        </a>
+                    </p>
+
+                    {% else %}
+
+                    <div class="booking-empty">
+
+                        <div class="booking-empty-icon">
+                            +
+                        </div>
+
+                        <h3>No vehicles added yet</h3>
+
+                        <p>
+                            Add your EV before booking a service.
+                        </p>
+
+                        <a
+                            href="/add-vehicle"
+                            class="btn btn-evease"
+                        >
+                            + Add Vehicle
+                        </a>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if vehicles %}
+
+                <div class="booking-next-container">
+
+                    <button
+                        type="button"
+                        class="btn btn-evease booking-next-btn"
+                        onclick="continueToService()"
+                    >
+                        Continue
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 2: SELECT SERVICE -->
+
+        <div
+            class="booking-card booking-step-preview"
+            id="serviceStep"
+            style="display: none;"
+        >
+
+            <div class="booking-card-header">
+
+                <span class="booking-card-number">
+                    STEP 2
+                </span>
+
+                <h2>Select Your Service</h2>
+
+                <p>
+                    Choose the type of service your EV needs.
+                </p>
+
+            </div>
+
+
+            <div class="booking-body">
+
+                <div class="service-options">
+
+                    <label class="service-option">
+
+                        <input
+                            type="radio"
+                            name="service_type"
+                            value="General Service"
+                        >
+
+                        <div class="service-option-content">
+
+                            <div class="service-option-icon">
+                                🔧
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    General Service
+                                </h3>
+
+                                <p>
+                                    Routine EV maintenance,
+                                    inspection and service checks.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="service-option">
+
+                        <input
+                            type="radio"
+                            name="service_type"
+                            value="Battery Check"
+                        >
+
+                        <div class="service-option-content">
+
+                            <div class="service-option-icon">
+                                🔋
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Battery Check
+                                </h3>
+
+                                <p>
+                                    Battery health and performance
+                                    inspection for your EV.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+
+                <div class="booking-next-container">
+
+                    <button
+                        type="button"
+                        class="btn btn-evease booking-next-btn"
+                        id="serviceContinueBtn"
+                        disabled
+                        onclick="continueToSchedule()"
+                    >
+                        Continue
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 3: SCHEDULE -->
+
+        <div
+            class="booking-card booking-step-preview"
+            id="scheduleStep"
+            style="display: none;"
+        >
+
+            <div class="booking-card-header">
+
+                <span class="booking-card-number">
+                    STEP 3
+                </span>
+
+                <h2>Schedule Your Service</h2>
+
+                <p>
+                    Choose your preferred service date and time.
+                </p>
+
+            </div>
+
+
+            <div class="booking-body">
+
+                <div class="schedule-field">
+
+                    <label
+                        for="preferredDate"
+                        class="booking-label"
+                    >
+                        Preferred Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="preferredDate"
+                        class="form-control booking-date"
+                    >
+
+                    <p class="booking-help">
+                        Please choose today or a future date.
                     </p>
 
                 </div>
 
-                <div class="booking-next-container">
-                    <button type="button" class="btn btn-evease booking-next-btn">
+
+                <div class="schedule-field schedule-time-field">
+
+                    <label class="booking-label">
+                        Preferred Time
+                    </label>
+
+                    <div class="time-options">
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="09:00 AM"
+                            >
+                            <span>09:00 AM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="10:00 AM"
+                            >
+                            <span>10:00 AM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="11:00 AM"
+                            >
+                            <span>11:00 AM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="12:00 PM"
+                            >
+                            <span>12:00 PM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="02:00 PM"
+                            >
+                            <span>02:00 PM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="03:00 PM"
+                            >
+                            <span>03:00 PM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="04:00 PM"
+                            >
+                            <span>04:00 PM</span>
+                        </label>
+
+                        <label class="time-option">
+                            <input
+                                type="radio"
+                                name="preferred_time"
+                                value="05:00 PM"
+                            >
+                            <span>05:00 PM</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="booking-navigation">
+
+                    <button
+                        type="button"
+                        class="btn btn-evease-outline"
+                        onclick="backToService()"
+                    >
+                        ← Back
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-evease booking-next-btn"
+                        id="scheduleContinueBtn"
+                        disabled
+                        onclick="continueToPickup()"
+                    >
                         Continue
                         <span>→</span>
                     </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 4: PICKUP DETAILS -->
+
+        <div
+            class="booking-card booking-step-preview"
+            id="pickupStep"
+            style="display: none;"
+        >
+
+            <div class="booking-card-header">
+
+                <span class="booking-card-number">
+                    STEP 4
+                </span>
+
+                <h2>Pickup Details</h2>
+
+                <p>
+                    Tell us where your EV should be picked up.
+                </p>
+
+            </div>
+
+
+            <div class="booking-body">
+
+                <div class="pickup-field">
+
+                    <label
+                        for="pickupAddress"
+                        class="booking-label"
+                    >
+                        Pickup Address
+                    </label>
+
+                    <textarea
+                        id="pickupAddress"
+                        class="form-control booking-textarea"
+                        rows="4"
+                        placeholder="Enter your complete pickup address"
+                    ></textarea>
+
+                    <p class="booking-help">
+                        Please provide the complete address where
+                        the driver should collect your EV.
+                    </p>
+
+                </div>
+
+
+                <div class="pickup-field">
+
+                    <label
+                        for="pickupInstructions"
+                        class="booking-label"
+                    >
+                        Pickup Instructions
+                        <span class="booking-optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="pickupInstructions"
+                        class="form-control booking-textarea"
+                        rows="3"
+                        placeholder="Example: Please call me when you arrive."
+                    ></textarea>
+
+                    <p class="booking-help">
+                        Add any useful instructions for the pickup.
+                    </p>
+
+                </div>
+
+
+                <div class="booking-navigation">
+
+                    <button
+                        type="button"
+                        class="btn btn-evease-outline"
+                        onclick="backToSchedule()"
+                    >
+                        ← Back
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-evease booking-next-btn"
+                        id="pickupContinueBtn"
+                        disabled
+                        onclick="continueToConfirm()"
+                    >
+                        Continue
+                        <span>→</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 5: REVIEW & CONFIRM -->
+
+        <div
+            class="booking-card booking-step-preview"
+            id="confirmStep"
+            style="display: none;"
+        >
+
+            <div class="booking-card-header">
+
+                <span class="booking-card-number">
+                    STEP 5
+                </span>
+
+                <h2>Review & Confirm</h2>
+
+                <p>
+                    Please review your booking details before confirming.
+                </p>
+
+            </div>
+
+
+            <div class="booking-body">
+
+                <!-- VEHICLE SUMMARY -->
+
+                <div class="review-section">
+
+                    <div class="review-section-heading">
+                        <span class="review-icon">🚗</span>
+
+                        <div>
+                            <h3>Vehicle</h3>
+                            <p>Your selected EV</p>
+                        </div>
+                    </div>
+
+                    <div class="review-value-box">
+
+                        <strong id="reviewVehicle">
+                            —
+                        </strong>
+
+                        <span id="reviewVehicleType">
+                            —
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SERVICE SUMMARY -->
+
+                <div class="review-section">
+
+                    <div class="review-section-heading">
+                        <span class="review-icon">🔧</span>
+
+                        <div>
+                            <h3>Service</h3>
+                            <p>Selected service type</p>
+                        </div>
+                    </div>
+
+                    <div class="review-value-box">
+
+                        <strong id="reviewService">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SCHEDULE SUMMARY -->
+
+                <div class="review-section">
+
+                    <div class="review-section-heading">
+                        <span class="review-icon">📅</span>
+
+                        <div>
+                            <h3>Schedule</h3>
+                            <p>Preferred service date and time</p>
+                        </div>
+                    </div>
+
+                    <div class="review-grid">
+
+                        <div class="review-value-box">
+
+                            <span class="review-label">
+                                Date
+                            </span>
+
+                            <strong id="reviewDate">
+                                —
+                            </strong>
+
+                        </div>
+
+                        <div class="review-value-box">
+
+                            <span class="review-label">
+                                Time
+                            </span>
+
+                            <strong id="reviewTime">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PICKUP SUMMARY -->
+
+                <div class="review-section">
+
+                    <div class="review-section-heading">
+                        <span class="review-icon">📍</span>
+
+                        <div>
+                            <h3>Pickup Details</h3>
+                            <p>Doorstep pickup information</p>
+                        </div>
+                    </div>
+
+
+                    <div class="review-value-box review-address-box">
+
+                        <span class="review-label">
+                            Pickup Address
+                        </span>
+
+                        <strong id="reviewAddress">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-value-box review-instructions-box">
+
+                        <span class="review-label">
+                            Pickup Instructions
+                        </span>
+
+                        <strong id="reviewInstructions">
+                            No instructions provided
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FINAL NOTICE -->
+
+                <div class="review-notice">
+
+                    <span>✓</span>
+
+                    <p>
+                        Your booking will be created with
+                        <strong>Pending</strong> status after you
+                        confirm.
+                    </p>
+
+                </div>
+
+
+                <!-- NAVIGATION -->
+
+                <div class="booking-navigation">
+
+                    <button
+                        type="button"
+                        class="btn btn-evease-outline"
+                        onclick="backToPickup()"
+                    >
+                        ← Back
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-evease booking-confirm-btn"
+                        onclick="confirmBooking()"
+                    >
+                        Confirm Booking
+                        <span>✓</span>
+                    </button>
+
                 </div>
 
             </div>
@@ -99,5 +754,489 @@
 
     </div>
 </section>
+
+
+<script>
+
+/* =========================================
+   STEP 1 → STEP 2
+   ========================================= */
+
+function continueToService() {
+
+    const vehicleSelect =
+        document.getElementById("vehicleSelect");
+
+    if (!vehicleSelect.value) {
+
+        alert("Please select a vehicle before continuing.");
+
+        return;
+    }
+
+    const serviceStep =
+        document.getElementById("serviceStep");
+
+    serviceStep.style.display = "block";
+
+    serviceStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   SERVICE SELECTION
+   ========================================= */
+
+const serviceOptions =
+    document.querySelectorAll(
+        'input[name="service_type"]'
+    );
+
+const serviceContinueBtn =
+    document.getElementById(
+        "serviceContinueBtn"
+    );
+
+
+serviceOptions.forEach(function(option) {
+
+    option.addEventListener("change", function() {
+
+        serviceContinueBtn.disabled = false;
+
+    });
+
+});
+
+
+/* =========================================
+   STEP 2 → STEP 3
+   ========================================= */
+
+function continueToSchedule() {
+
+    const selectedService =
+        document.querySelector(
+            'input[name="service_type"]:checked'
+        );
+
+    if (!selectedService) {
+
+        alert("Please select a service before continuing.");
+
+        return;
+    }
+
+    const scheduleStep =
+        document.getElementById("scheduleStep");
+
+    scheduleStep.style.display = "block";
+
+    scheduleStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   MINIMUM DATE = TODAY
+   ========================================= */
+
+const preferredDate =
+    document.getElementById("preferredDate");
+
+const today =
+    new Date().toISOString().split("T")[0];
+
+preferredDate.min = today;
+
+
+/* =========================================
+   ENABLE SCHEDULE CONTINUE
+   ========================================= */
+
+const scheduleContinueBtn =
+    document.getElementById(
+        "scheduleContinueBtn"
+    );
+
+
+function checkScheduleFields() {
+
+    const selectedTime =
+        document.querySelector(
+            'input[name="preferred_time"]:checked'
+        );
+
+    if (
+        preferredDate.value &&
+        selectedTime
+    ) {
+
+        scheduleContinueBtn.disabled = false;
+
+    } else {
+
+        scheduleContinueBtn.disabled = true;
+
+    }
+
+}
+
+
+preferredDate.addEventListener(
+    "change",
+    checkScheduleFields
+);
+
+
+document
+    .querySelectorAll(
+        'input[name="preferred_time"]'
+    )
+    .forEach(function(option) {
+
+        option.addEventListener(
+            "change",
+            checkScheduleFields
+        );
+
+    });
+
+
+/* =========================================
+   STEP 3 → STEP 4
+   ========================================= */
+
+function continueToPickup() {
+
+    const selectedDate =
+        preferredDate.value;
+
+    const selectedTime =
+        document.querySelector(
+            'input[name="preferred_time"]:checked'
+        );
+
+    if (!selectedDate) {
+
+        alert("Please select a preferred date.");
+
+        return;
+    }
+
+    if (!selectedTime) {
+
+        alert("Please select a preferred time.");
+
+        return;
+    }
+
+    const pickupStep =
+        document.getElementById("pickupStep");
+
+    pickupStep.style.display = "block";
+
+    pickupStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   STEP 3 → STEP 2
+   ========================================= */
+
+function backToService() {
+
+    const serviceStep =
+        document.getElementById("serviceStep");
+
+    serviceStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   PICKUP ADDRESS VALIDATION
+   ========================================= */
+
+const pickupAddress =
+    document.getElementById("pickupAddress");
+
+const pickupContinueBtn =
+    document.getElementById(
+        "pickupContinueBtn"
+    );
+
+
+function checkPickupAddress() {
+
+    const address =
+        pickupAddress.value.trim();
+
+    pickupContinueBtn.disabled =
+        address.length === 0;
+
+}
+
+
+pickupAddress.addEventListener(
+    "input",
+    checkPickupAddress
+);
+
+
+/* =========================================
+   STEP 4 → STEP 5
+   ========================================= */
+
+function continueToConfirm() {
+
+    const address =
+        pickupAddress.value.trim();
+
+    if (!address) {
+
+        alert("Please enter your pickup address.");
+
+        return;
+    }
+
+
+    const vehicleSelect =
+        document.getElementById("vehicleSelect");
+
+    const selectedVehicle =
+        vehicleSelect.options[
+            vehicleSelect.selectedIndex
+        ];
+
+
+    const selectedService =
+        document.querySelector(
+            'input[name="service_type"]:checked'
+        );
+
+
+    const selectedTime =
+        document.querySelector(
+            'input[name="preferred_time"]:checked'
+        );
+
+
+    /* Vehicle */
+
+    document.getElementById(
+        "reviewVehicle"
+    ).textContent =
+        selectedVehicle.dataset.number +
+        " — " +
+        selectedVehicle.dataset.brand +
+        " " +
+        selectedVehicle.dataset.model;
+
+
+    document.getElementById(
+        "reviewVehicleType"
+    ).textContent =
+        selectedVehicle.dataset.type;
+
+
+    /* Service */
+
+    document.getElementById(
+        "reviewService"
+    ).textContent =
+        selectedService.value;
+
+
+    /* Date */
+
+    const dateParts =
+        preferredDate.value.split("-");
+
+    const formattedDate =
+        dateParts[2] +
+        "/" +
+        dateParts[1] +
+        "/" +
+        dateParts[0];
+
+
+    document.getElementById(
+        "reviewDate"
+    ).textContent =
+        formattedDate;
+
+
+    /* Time */
+
+    document.getElementById(
+        "reviewTime"
+    ).textContent =
+        selectedTime.value;
+
+
+    /* Address */
+
+    document.getElementById(
+        "reviewAddress"
+    ).textContent =
+        address;
+
+
+    /* Instructions */
+
+    const pickupInstructions =
+        document.getElementById(
+            "pickupInstructions"
+        ).value.trim();
+
+
+    document.getElementById(
+        "reviewInstructions"
+    ).textContent =
+        pickupInstructions ||
+        "No instructions provided";
+
+
+    /* Show Step 5 */
+
+    const confirmStep =
+        document.getElementById("confirmStep");
+
+    confirmStep.style.display = "block";
+
+    confirmStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   STEP 4 → STEP 3
+   ========================================= */
+
+function backToSchedule() {
+
+    const scheduleStep =
+        document.getElementById("scheduleStep");
+
+    scheduleStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   STEP 5 → STEP 4
+   ========================================= */
+
+function backToPickup() {
+
+    const pickupStep =
+        document.getElementById("pickupStep");
+
+    pickupStep.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* =========================================
+   CONFIRM BOOKING
+   ========================================= */
+
+function confirmBooking() {
+
+    const vehicleSelect = document.getElementById("vehicleSelect");
+    const serviceSelect = document.querySelector(
+        'input[name="service_type"]:checked'
+    );
+    const dateInput = document.getElementById("preferredDate");
+    const timeInput = document.querySelector(
+        'input[name="preferred_time"]:checked'
+    );
+    const addressInput = document.getElementById("pickupAddress");
+    const instructionsInput = document.getElementById(
+        "pickupInstructions"
+    );
+
+    if (!vehicleSelect || !vehicleSelect.value) {
+        alert("Please select a vehicle.");
+        return;
+    }
+
+    if (!serviceSelect) {
+        alert("Please select a service.");
+        return;
+    }
+
+    if (!dateInput || !dateInput.value) {
+        alert("Please select a preferred date.");
+        return;
+    }
+
+    if (!timeInput) {
+        alert("Please select a preferred time.");
+        return;
+    }
+
+    if (!addressInput || !addressInput.value.trim()) {
+        alert("Please enter the pickup address.");
+        return;
+    }
+
+    const form = document.createElement("form");
+
+    form.method = "POST";
+    form.action = "/create-booking";
+
+    const fields = {
+        vehicle_id: vehicleSelect.value,
+        service_type: serviceSelect.value,
+        preferred_date: dateInput.value,
+        preferred_time: timeInput.value,
+        pickup_address: addressInput.value.trim(),
+        pickup_instructions: instructionsInput
+            ? instructionsInput.value.trim()
+            : ""
+    };
+
+    Object.keys(fields).forEach(function (name) {
+
+        const input = document.createElement("input");
+
+        input.type = "hidden";
+        input.name = name;
+        input.value = fields[name];
+
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+
+    form.submit();
+}
+
+</script>
 
 {% endblock %}
