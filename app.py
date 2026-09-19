@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, session, redirect
 import mysql.connector
 import os
+
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 load_dotenv()
+
 
 app = Flask(__name__)
 app.secret_key = "evease-development-secret-key"
@@ -22,6 +25,7 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD"),
         database=os.getenv("DB_NAME")
     )
+
     return connection
 
 
@@ -41,11 +45,9 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
-    # Show registration page
     if request.method == "GET":
         return render_template("register.html")
 
-    # Get form data
     name = request.form.get("name", "").strip()
     email = request.form.get("email", "").strip().lower()
     phone = request.form.get("phone", "").strip()
@@ -74,7 +76,11 @@ def register():
 
         # Check if email already exists
         cursor.execute(
-            "SELECT id FROM owners WHERE email = %s",
+            """
+            SELECT id
+            FROM owners
+            WHERE email = %s
+            """,
             (email,)
         )
 
@@ -82,14 +88,14 @@ def register():
 
         if existing_owner:
             return render_template(
-        "auth_message.html",
-        title="Account Already Exists",
-        message="An account with this email address already exists. Please login to your existing EVEase account.",
-        name=None,
-        email=email,
-        button_text="Login to EVEase",
-        button_url="/login"
-    )
+                "auth_message.html",
+                title="Account Already Exists",
+                message="An account with this email address already exists. Please login to your existing EVEase account.",
+                name=None,
+                email=email,
+                button_text="Login to EVEase",
+                button_url="/login"
+            )
 
         # ------------------------------------------
         # HASH PASSWORD
@@ -104,30 +110,37 @@ def register():
         cursor.execute(
             """
             INSERT INTO owners
-            (name, email, phone, password)
+            (
+                name,
+                email,
+                phone,
+                password
+            )
             VALUES (%s, %s, %s, %s)
             """,
-            (name, email, phone, hashed_password)
+            (
+                name,
+                email,
+                phone,
+                hashed_password
+            )
         )
 
         connection.commit()
 
-        return f"""
-        <h1>Registration Successful!</h1>
+        # ------------------------------------------
+        # REGISTRATION SUCCESS
+        # ------------------------------------------
 
-        <p>
-            Welcome to EVEase,
-            <strong>{name}</strong>.
-        </p>
-
-        <p>Your account has been created successfully.</p>
-
-        <p>Email: {email}</p>
-
-        <p>
-            <a href="/login">Login to EVEase</a>
-        </p>
-        """
+        return render_template(
+            "auth_message.html",
+            title="Registration Successful!",
+            message="Your EVEase account has been created successfully.",
+            name=name,
+            email=email,
+            button_text="Login to EVEase",
+            button_url="/login"
+        )
 
     except mysql.connector.Error as error:
 
@@ -136,11 +149,7 @@ def register():
 
         return f"""
         <h1>Registration Failed</h1>
-
-        <p>
-            Something went wrong while creating your account.
-        </p>
-
+        <p>Something went wrong while creating your account.</p>
         <p>Error: {error}</p>
         """
 
@@ -153,20 +162,228 @@ def register():
             connection.close()
 
 
+# ==========================================
+# OWNER LOGIN
+# ==========================================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "GET":
+        return render_template("login.html")
+
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+
+    # ------------------------------------------
+    # VALIDATION
+    # ------------------------------------------
+
+    if not email or not password:
+        return render_template(
+            "auth_message.html",
+            title="Login Failed",
+            message="Please enter your email and password.",
+            name=None,
+            email=None,
+            button_text="Try Again",
+            button_url="/login"
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                password
+            FROM owners
+            WHERE email = %s
+            """,
+            (email,)
+        )
+
+        owner = cursor.fetchone()
+
+        # ------------------------------------------
+        # ACCOUNT NOT FOUND
+        # ------------------------------------------
+
+        if not owner:
+            return render_template(
+                "auth_message.html",
+                title="Login Failed",
+                message="The email address or password you entered is incorrect.",
+                name=None,
+                email=None,
+                button_text="Try Again",
+                button_url="/login"
+            )
+
+        # ------------------------------------------
+        # PASSWORD CHECK
+        # ------------------------------------------
+
+        if not check_password_hash(owner["password"], password):
+            return render_template(
+                "auth_message.html",
+                title="Login Failed",
+                message="The email address or password you entered is incorrect.",
+                name=None,
+                email=None,
+                button_text="Try Again",
+                button_url="/login"
+            )
+
+        # ------------------------------------------
+        # CREATE LOGIN SESSION
+        # ------------------------------------------
+
+        session["owner_id"] = owner["id"]
+        session["owner_name"] = owner["name"]
+        session["owner_email"] = owner["email"]
+
+        # ------------------------------------------
+        # LOGIN SUCCESS
+        # ------------------------------------------
+
+        return render_template(
+            "auth_message.html",
+            title="Login Successful!",
+            message="You are now logged in to EVEase.",
+            name=owner["name"],
+            email=owner["email"],
+            button_text="Go to Dashboard",
+            button_url="/dashboard"
+        )
+
+    except mysql.connector.Error as error:
+
+        return f"""
+        <h1>Login Failed</h1>
+        <p>Something went wrong while logging in.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# OWNER DASHBOARD
+# ==========================================
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "owner_id" not in session:
+        return redirect("/login")
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # ------------------------------------------
+        # COUNT OWNER VEHICLES
+        # ------------------------------------------
+
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM vehicles
+            WHERE owner_id = %s
+            """,
+            (session["owner_id"],)
+        )
+
+        vehicle_count = cursor.fetchone()[0]
+
+        # ------------------------------------------
+        # DASHBOARD
+        # ------------------------------------------
+
+        return render_template(
+            "dashboard.html",
+            owner_name=session.get("owner_name", "Owner"),
+            vehicle_count=vehicle_count,
+            booking_count=0,
+            pending_count=0,
+            pending_payment_count=0,
+            recent_bookings=[]
+        )
+
+    except mysql.connector.Error as error:
+
+        return f"""
+        <h1>Dashboard Error</h1>
+        <p>Something went wrong while loading your dashboard.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# ADD VEHICLE
+# ==========================================
+
 @app.route("/add-vehicle", methods=["GET", "POST"])
 def add_vehicle():
+
     if "owner_id" not in session:
         return redirect("/login")
 
     if request.method == "GET":
         return render_template("add_vehicle.html")
 
-    vehicle_number = request.form.get("vehicle_number", "").strip().upper()
-    brand = request.form.get("brand", "").strip()
-    model = request.form.get("model", "").strip()
-    vehicle_type = request.form.get("vehicle_type", "").strip()
-    year = request.form.get("year", "").strip()
-    battery_capacity = request.form.get("battery_capacity", "").strip()
+    vehicle_number = request.form.get(
+        "vehicle_number", ""
+    ).strip().upper()
+
+    brand = request.form.get(
+        "brand", ""
+    ).strip()
+
+    model = request.form.get(
+        "model", ""
+    ).strip()
+
+    vehicle_type = request.form.get(
+        "vehicle_type", ""
+    ).strip()
+
+    year = request.form.get(
+        "year", ""
+    ).strip()
+
+    battery_capacity = request.form.get(
+        "battery_capacity", ""
+    ).strip()
+
+    # ------------------------------------------
+    # VALIDATION
+    # ------------------------------------------
 
     if not vehicle_number or not brand or not model or not vehicle_type:
         return "Please fill in all required vehicle details."
@@ -208,6 +425,7 @@ def add_vehicle():
         return redirect("/dashboard")
 
     except (mysql.connector.Error, ValueError) as error:
+
         if connection:
             connection.rollback()
 
@@ -219,14 +437,21 @@ def add_vehicle():
         """
 
     finally:
+
         if cursor:
             cursor.close()
 
         if connection:
-            connection.close() 
+            connection.close()
+
+
+# ==========================================
+# EDIT VEHICLE
+# ==========================================
 
 @app.route("/edit-vehicle/<int:vehicle_id>", methods=["GET", "POST"])
 def edit_vehicle(vehicle_id):
+
     if "owner_id" not in session:
         return redirect("/login")
 
@@ -249,9 +474,13 @@ def edit_vehicle(vehicle_id):
                 year,
                 battery_capacity
             FROM vehicles
-            WHERE id = %s AND owner_id = %s
+            WHERE id = %s
+              AND owner_id = %s
             """,
-            (vehicle_id, session["owner_id"])
+            (
+                vehicle_id,
+                session["owner_id"]
+            )
         )
 
         vehicle = cursor.fetchone()
@@ -259,14 +488,21 @@ def edit_vehicle(vehicle_id):
         if not vehicle:
             return "Vehicle not found."
 
-        # Display edit form
+        # ------------------------------------------
+        # DISPLAY EDIT FORM
+        # ------------------------------------------
+
         if request.method == "GET":
+
             return render_template(
                 "edit_vehicle.html",
                 vehicle=vehicle
             )
 
-        # Get updated values
+        # ------------------------------------------
+        # GET UPDATED VALUES
+        # ------------------------------------------
+
         vehicle_number = request.form.get(
             "vehicle_number", ""
         ).strip().upper()
@@ -294,7 +530,10 @@ def edit_vehicle(vehicle_id):
         if not vehicle_number or not brand or not model or not vehicle_type:
             return "Please fill in all required vehicle details."
 
-        # Update vehicle
+        # ------------------------------------------
+        # UPDATE VEHICLE
+        # ------------------------------------------
+
         cursor.execute(
             """
             UPDATE vehicles
@@ -305,7 +544,8 @@ def edit_vehicle(vehicle_id):
                 vehicle_type = %s,
                 year = %s,
                 battery_capacity = %s
-            WHERE id = %s AND owner_id = %s
+            WHERE id = %s
+              AND owner_id = %s
             """,
             (
                 vehicle_number,
@@ -324,6 +564,7 @@ def edit_vehicle(vehicle_id):
         return redirect("/my-vehicles")
 
     except (mysql.connector.Error, ValueError) as error:
+
         if connection:
             connection.rollback()
 
@@ -335,14 +576,21 @@ def edit_vehicle(vehicle_id):
         """
 
     finally:
+
         if cursor:
             cursor.close()
 
         if connection:
-            connection.close()    
+            connection.close()
+
+
+# ==========================================
+# DELETE VEHICLE
+# ==========================================
 
 @app.route("/delete-vehicle/<int:vehicle_id>", methods=["POST"])
 def delete_vehicle(vehicle_id):
+
     if "owner_id" not in session:
         return redirect("/login")
 
@@ -357,9 +605,13 @@ def delete_vehicle(vehicle_id):
         cursor.execute(
             """
             DELETE FROM vehicles
-            WHERE id = %s AND owner_id = %s
+            WHERE id = %s
+              AND owner_id = %s
             """,
-            (vehicle_id, session["owner_id"])
+            (
+                vehicle_id,
+                session["owner_id"]
+            )
         )
 
         connection.commit()
@@ -367,6 +619,7 @@ def delete_vehicle(vehicle_id):
         return redirect("/my-vehicles")
 
     except mysql.connector.Error as error:
+
         if connection:
             connection.rollback()
 
@@ -378,15 +631,21 @@ def delete_vehicle(vehicle_id):
         """
 
     finally:
+
         if cursor:
             cursor.close()
 
         if connection:
-            connection.close()                     
+            connection.close()
 
+
+# ==========================================
+# MY VEHICLES
+# ==========================================
 
 @app.route("/my-vehicles")
 def my_vehicles():
+
     if "owner_id" not in session:
         return redirect("/login")
 
@@ -423,6 +682,7 @@ def my_vehicles():
         )
 
     except mysql.connector.Error as error:
+
         return f"""
         <h1>Vehicles Error</h1>
         <p>Something went wrong while loading your vehicles.</p>
@@ -430,18 +690,21 @@ def my_vehicles():
         """
 
     finally:
+
         if cursor:
             cursor.close()
 
         if connection:
-            connection.close()                      
+            connection.close()
 
-    # ==========================================
-# OWNER DASHBOARD
+
+# ==========================================
+# BOOK A SERVICE
 # ==========================================
 
-@app.route("/dashboard")
-def dashboard():
+@app.route("/book-service")
+def book_service():
+
     if "owner_id" not in session:
         return redirect("/login")
 
@@ -450,43 +713,50 @@ def dashboard():
 
     try:
         connection = get_db_connection()
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
 
-        # Count vehicles belonging to the logged-in owner
+        # ------------------------------------------
+        # LOAD ONLY THE LOGGED-IN OWNER'S VEHICLES
+        # ------------------------------------------
+
         cursor.execute(
             """
-            SELECT COUNT(*)
+            SELECT
+                id,
+                vehicle_number,
+                brand,
+                model,
+                vehicle_type
             FROM vehicles
             WHERE owner_id = %s
+            ORDER BY created_at DESC
             """,
             (session["owner_id"],)
         )
 
-        vehicle_count = cursor.fetchone()[0]
+        vehicles = cursor.fetchall()
 
         return render_template(
-            "dashboard.html",
-            owner_name=session.get("owner_name", "Owner"),
-            vehicle_count=vehicle_count,
-            booking_count=0,
-            pending_count=0,
-            pending_payment_count=0,
-            recent_bookings=[]
+            "book_service.html",
+            vehicles=vehicles
         )
 
     except mysql.connector.Error as error:
+
         return f"""
-        <h1>Dashboard Error</h1>
-        <p>Something went wrong while loading your dashboard.</p>
+        <h1>Booking Error</h1>
+        <p>Something went wrong while loading your vehicles.</p>
         <p>Error: {error}</p>
         """
 
     finally:
+
         if cursor:
             cursor.close()
 
         if connection:
             connection.close()
+
 
 # ==========================================
 # OWNER LOGOUT
@@ -498,105 +768,6 @@ def logout():
     session.clear()
 
     return redirect("/login")
-
-
-## ==========================================
-# OWNER LOGIN
-# ==========================================
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-
-    if request.method == "GET":
-        return render_template("login.html")
-
-    email = request.form.get("email", "").strip().lower()
-    password = request.form.get("password", "")
-
-    if not email or not password:
-        return render_template(
-            "auth_message.html",
-            title="Login Failed",
-            message="Please enter your email and password.",
-            name=None,
-            email=None,
-            button_text="Try Again",
-            button_url="/login"
-        )
-
-    connection = None
-    cursor = None
-
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor(dictionary=True)
-
-        cursor.execute(
-            """
-            SELECT id, name, email, password
-            FROM owners
-            WHERE email = %s
-            """,
-            (email,)
-        )
-
-        owner = cursor.fetchone()
-
-        # Account not found
-        if not owner:
-            return render_template(
-                "auth_message.html",
-                title="Login Failed",
-                message="The email address or password you entered is incorrect.",
-                name=None,
-                email=None,
-                button_text="Try Again",
-                button_url="/login"
-            )
-
-        # Incorrect password
-        if not check_password_hash(owner["password"], password):
-            return render_template(
-                "auth_message.html",
-                title="Login Failed",
-                message="The email address or password you entered is incorrect.",
-                name=None,
-                email=None,
-                button_text="Try Again",
-                button_url="/login"
-            )
-
-        # Create login session
-        session["owner_id"] = owner["id"]
-        session["owner_name"] = owner["name"]
-        session["owner_email"] = owner["email"]
-
-        # Login successful
-        return render_template(
-            "auth_message.html",
-            title="Login Successful!",
-            message="You are now logged in to EVEase.",
-            name=owner["name"],
-            email=owner["email"],
-            button_text="Go to EVEase Home",
-            button_url="/"
-        )
-
-    except mysql.connector.Error as error:
-
-        return f"""
-        <h1>Login Failed</h1>
-        <p>Something went wrong while logging in.</p>
-        <p>Error: {error}</p>
-        """
-
-    finally:
-
-        if cursor:
-            cursor.close()
-
-        if connection:
-            connection.close()
 
 
 # ==========================================

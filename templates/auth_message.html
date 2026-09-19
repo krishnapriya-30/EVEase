@@ -1,61 +1,63 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - EVEase{% endblock %}
+{% block title %}EVEase{% endblock %}
 
 {% block content %}
 
-<section class="auth-result-section">
+<div class="auth-popup-overlay">
+    <div class="auth-popup">
 
-    <div class="container">
+        <button
+            type="button"
+            class="auth-popup-close"
+            onclick="closeAuthPopup()"
+            aria-label="Close"
+        >
+            ×
+        </button>
 
-        <div class="auth-result-card">
-
-            <div class="auth-result-icon">
-                ✓
-            </div>
-
-            <div class="auth-result-content">
-
-                <span class="auth-result-eyebrow">
-                    EVEASE
-                </span>
-
-                <h1>
-                    {{ title }}
-                </h1>
-
-                <p class="auth-result-message">
-                    {{ message }}
-                </p>
-
-                {% if name %}
-                <p class="auth-result-user">
-                    Welcome back, <strong>{{ name }}</strong>!
-                </p>
-                {% endif %}
-
-                {% if email %}
-                <div class="auth-result-info">
-                    <span>Account Email</span>
-                    <strong>{{ email }}</strong>
-                </div>
-                {% endif %}
-
-                <a href="{{ button_url }}" class="btn btn-evease auth-result-btn">
-                    {{ button_text }}
-                    <span>→</span>
-                </a>
-
-            </div>
-
-            <div class="auth-result-footer">
-                Smart EV service management
-            </div>
-
+        <div class="auth-popup-icon">
+            ✓
         </div>
 
-    </div>
+        <span class="auth-popup-eyebrow">
+            EVEASE
+        </span>
 
-</section>
+        <h2>{{ title }}</h2>
+
+        <p class="auth-popup-message">
+            {{ message }}
+        </p>
+
+        {% if name %}
+        <p class="auth-popup-user">
+            Welcome back, <strong>{{ name }}</strong>!
+        </p>
+        {% endif %}
+
+        {% if email %}
+        <div class="auth-popup-email">
+            <span>Account Email</span>
+            <strong>{{ email }}</strong>
+        </div>
+        {% endif %}
+
+        <a
+            href="{{ button_url }}"
+            class="btn btn-evease auth-popup-btn"
+        >
+            {{ button_text }}
+            <span>→</span>
+        </a>
+
+    </div>
+</div>
+
+<script>
+    function closeAuthPopup() {
+        window.history.back();
+    }
+</script>
 
 {% endblock %}

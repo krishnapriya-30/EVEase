@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Book a Service - EVEase{% endblock %}
+
+{% block content %}
+
+<section class="booking-section">
+    <div class="container">
+
+        <div class="booking-header">
+            <span class="booking-eyebrow">EVEASE SERVICE BOOKING</span>
+            <h1>Book a Service</h1>
+            <p>
+                Schedule doorstep service for your EV in a few simple steps.
+            </p>
+        </div>
+
+        <div class="booking-progress">
+            <div class="booking-step active">
+                <span>1</span>
+                <small>Vehicle</small>
+            </div>
+
+            <div class="booking-line"></div>
+
+            <div class="booking-step">
+                <span>2</span>
+                <small>Service</small>
+            </div>
+
+            <div class="booking-line"></div>
+
+            <div class="booking-step">
+                <span>3</span>
+                <small>Schedule</small>
+            </div>
+
+            <div class="booking-line"></div>
+
+            <div class="booking-step">
+                <span>4</span>
+                <small>Pickup</small>
+            </div>
+
+            <div class="booking-line"></div>
+
+            <div class="booking-step">
+                <span>5</span>
+                <small>Confirm</small>
+            </div>
+        </div>
+
+        <div class="booking-card">
+
+            <div class="booking-card-header">
+                <span class="booking-card-number">STEP 1</span>
+                <h2>Select Your Vehicle</h2>
+                <p>
+                    Choose the EV you want to book for service.
+                </p>
+            </div>
+
+            <div class="booking-body">
+
+                <div class="vehicle-selection">
+
+                    <label class="booking-label">
+                        Your Vehicle
+                    </label>
+
+                    <select class="form-select booking-select">
+                        <option selected disabled>
+                            Select your vehicle
+                        </option>
+
+                        <option>
+                            KL08AB1234 — Tata Nexon EV
+                        </option>
+
+                    </select>
+
+                    <p class="booking-help">
+                        Don't see your vehicle?
+                        <a href="/add-vehicle">Add a new vehicle</a>
+                    </p>
+
+                </div>
+
+                <div class="booking-next-container">
+                    <button type="button" class="btn btn-evease booking-next-btn">
+                        Continue
+                        <span>→</span>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

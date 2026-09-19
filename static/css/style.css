@@ -1512,3 +1512,340 @@ body {
         font-size: 27px;
     }
 }
+
+/* =========================================
+   BOOK A SERVICE
+   ========================================= */
+
+.booking-section {
+    padding: 55px 0 70px;
+    background-color: #E3EDE0;
+    min-height: 80vh;
+}
+
+.booking-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.booking-eyebrow {
+    display: inline-block;
+    color: #4F6F4A;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.booking-header h1 {
+    color: #26352A;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.booking-header p {
+    color: #718078;
+    margin-bottom: 0;
+}
+
+.booking-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 850px;
+    margin: 0 auto 35px;
+}
+
+.booking-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 75px;
+}
+
+.booking-step span {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #D0E1CC;
+    color: #718078;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.booking-step.active span {
+    background-color: #4F6F4A;
+    color: #FFFFFF;
+}
+
+.booking-step small {
+    color: #718078;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.booking-step.active small {
+    color: #4F6F4A;
+}
+
+.booking-line {
+    height: 2px;
+    background-color: #B8CDB4;
+    flex: 1;
+    max-width: 120px;
+    margin: 0 5px 25px;
+}
+
+.booking-card {
+    max-width: 850px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    border: 1px solid #B8CDB4;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(38, 53, 42, 0.08);
+}
+
+.booking-card-header {
+    padding: 30px 35px;
+    border-bottom: 1px solid #E2E9E0;
+}
+
+.booking-card-number {
+    color: #4F6F4A;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.booking-card-header h2 {
+    color: #26352A;
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin: 8px 0 6px;
+}
+
+.booking-card-header p {
+    color: #718078;
+    margin: 0;
+}
+
+.booking-body {
+    padding: 35px;
+}
+
+.booking-label {
+    display: block;
+    color: #26352A;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.booking-select {
+    min-height: 52px;
+    border: 1px solid #B8CDB4;
+    border-radius: 10px;
+    color: #26352A;
+}
+
+.booking-select:focus {
+    border-color: #4F6F4A;
+    box-shadow: 0 0 0 0.2rem rgba(79, 111, 74, 0.12);
+}
+
+.booking-help {
+    color: #718078;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.booking-help a {
+    color: #4F6F4A;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.booking-help a:hover {
+    text-decoration: underline;
+}
+
+.booking-next-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 35px;
+}
+
+.booking-next-btn {
+    min-width: 145px;
+    padding: 12px 20px;
+}
+
+@media (max-width: 768px) {
+
+    .booking-section {
+        padding: 40px 15px 55px;
+    }
+
+    .booking-header h1 {
+        font-size: 2rem;
+    }
+
+    .booking-progress {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 5px;
+    }
+
+    .booking-step {
+        min-width: 65px;
+    }
+
+    .booking-line {
+        min-width: 35px;
+    }
+
+    .booking-card-header,
+    .booking-body {
+        padding: 25px 20px;
+    }
+}
+
+/* =========================================
+   AUTH POPUP MESSAGE
+   ========================================= */
+
+.auth-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(38, 53, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+}
+
+.auth-popup {
+    position: relative;
+    width: 100%;
+    max-width: 470px;
+    background: #FFFFFF;
+    border: 1px solid #B8CDB4;
+    border-radius: 20px;
+    padding: 40px 35px 35px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(38, 53, 42, 0.20);
+    animation: authPopupAppear 0.2s ease-out;
+}
+
+.auth-popup-close {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: #718078;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.auth-popup-close:hover {
+    color: #26352A;
+}
+
+.auth-popup-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #D0E1CC;
+    color: #4F6F4A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.auth-popup-eyebrow {
+    display: block;
+    color: #718078;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.auth-popup h2 {
+    color: #26352A;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.auth-popup-message {
+    color: #718078;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.auth-popup-user {
+    color: #26352A;
+    margin-bottom: 20px;
+}
+
+.auth-popup-email {
+    background: #F4F8F2;
+    border: 1px solid #D0E1CC;
+    border-radius: 12px;
+    padding: 13px 18px;
+    margin-bottom: 25px;
+}
+
+.auth-popup-email span {
+    display: block;
+    color: #718078;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.auth-popup-email strong {
+    color: #26352A;
+}
+
+.auth-popup-btn {
+    min-width: 190px;
+    padding: 11px 20px;
+}
+
+@keyframes authPopupAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 576px) {
+
+    .auth-popup {
+        padding: 35px 22px 25px;
+    }
+
+    .auth-popup h2 {
+        font-size: 1.45rem;
+    }
+}
