@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - EVEase{% endblock %}
+
+{% block content %}
+<section class="admin-dashboard-section">
+    <div class="container">
+        <div class="dashboard-welcome mb-4">
+            <div>
+                <span class="my-bookings-eyebrow">ADMIN PORTAL</span>
+                <h2>Welcome, {{ admin_name }}</h2>
+                <p>Assign active drivers to pending service bookings.</p>
+            </div>
+            <a href="/admin-logout" class="btn btn-evease-outline">Logout</a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="dashboard-card"><div><h6>Pending Bookings</h6><h3>{{ pending_count }}</h3></div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card"><div><h6>Assigned Bookings</h6><h3>{{ assigned_count }}</h3></div></div>
+            </div>
+        </div>
+
+        <div class="admin-panel">
+            <div class="mb-4">
+                <h3>Pending Bookings</h3>
+                <p class="text-muted mb-0">Assign an active driver to begin the pickup workflow.</p>
+            </div>
+
+            {% if pending_bookings %}
+                <div class="admin-booking-list">
+                    {% for booking in pending_bookings %}
+                        <article class="admin-booking-card">
+                            <div class="admin-booking-header">
+                                <div>
+                                    <span class="booking-reference-label">Booking Reference</span>
+                                    <h4>{{ booking.booking_reference }}</h4>
+                                </div>
+                                <span class="booking-status">Pending</span>
+                            </div>
+
+                            <div class="admin-booking-grid">
+                                <div><span>Owner</span><strong>{{ booking.owner_name }}</strong><small>{{ booking.owner_phone }}</small></div>
+                                <div><span>Vehicle</span><strong>{{ booking.brand }} {{ booking.model }}</strong><small>{{ booking.vehicle_number }} · {{ booking.vehicle_type }}</small></div>
+                                <div><span>Service</span><strong>{{ booking.service_type }}</strong></div>
+                                <div><span>Preferred Schedule</span><strong>{{ booking.preferred_date.strftime('%d %B %Y') }}</strong><small>{{ booking.preferred_time }}</small></div>
+                            </div>
+
+                            <div class="admin-address-box">
+                                <span>Pickup Address</span>
+                                <strong>{{ booking.pickup_address }}</strong>
+                                {% if booking.pickup_instructions %}
+                                    <small>Instructions: {{ booking.pickup_instructions }}</small>
+                                {% endif %}
+                            </div>
+
+                            {% if active_drivers %}
+                                <form method="POST" action="/admin/assign-driver/{{ booking.id }}" class="admin-assignment-form">
+                                    <label for="driver-{{ booking.id }}">Assign Active Driver</label>
+                                    <div class="admin-assignment-controls">
+                                        <select id="driver-{{ booking.id }}" name="driver_id" required>
+                                            <option value="" selected disabled>Select Driver</option>
+                                            {% for driver in active_drivers %}
+                                                <option value="{{ driver.id }}">{{ driver.name }} — {{ driver.phone }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-evease">Assign Driver</button>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <p class="admin-no-drivers">No active drivers are available for assignment.</p>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-bookings">
+                    <h2>No pending bookings</h2>
+                    <p>New pending service bookings will appear here for driver assignment.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

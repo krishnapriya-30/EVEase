@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - EVEase{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-wrapper">
+            <div class="auth-brand-panel">
+                <div class="auth-brand-logo"><span>EVEase</span></div>
+                <div class="auth-brand-content">
+                    <span class="auth-eyebrow">ADMIN PORTAL</span>
+                    <h1>Service coordination.<br><span>Made simple.</span></h1>
+                    <p>Review pending bookings and assign active drivers for doorstep EV service pickup.</p>
+                </div>
+                <div class="auth-brand-footer">EVEase administration workspace</div>
+            </div>
+
+            <div class="auth-form-panel">
+                <div class="auth-form-header">
+                    <div class="auth-mobile-logo">EVEase</div>
+                    <h2>Admin login</h2>
+                    <p>Login to manage driver assignments.</p>
+                </div>
+
+                <form method="POST" action="/admin-login">
+                    <div class="auth-field">
+                        <label for="email">Email Address</label>
+                        <div class="auth-input-wrapper">
+                            <input type="email" id="email" name="email" placeholder="Enter your admin email" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label for="password">Password</label>
+                        <div class="auth-input-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Login to Admin Portal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

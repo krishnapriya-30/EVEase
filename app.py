@@ -30,6 +30,104 @@ def get_db_connection():
 
 
 # ==========================================
+# DRIVER MODULE DATABASE SETUP
+# ==========================================
+
+def ensure_driver_schema():
+    """Create the driver table and booking association when missing."""
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS drivers
+            (
+                id INT NOT NULL AUTO_INCREMENT,
+                name VARCHAR(100) NOT NULL,
+                email VARCHAR(150) NOT NULL,
+                phone VARCHAR(15) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                license_no VARCHAR(50) NOT NULL,
+                status VARCHAR(30) NOT NULL DEFAULT 'Active',
+                created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                UNIQUE KEY email (email),
+                UNIQUE KEY license_no (license_no)
+            )
+            """
+        )
+
+        cursor.execute("SHOW COLUMNS FROM bookings LIKE 'driver_id'")
+
+        if not cursor.fetchone():
+            cursor.execute(
+                """
+                ALTER TABLE bookings
+                ADD COLUMN driver_id INT NULL,
+                ADD KEY driver_id (driver_id)
+                """
+            )
+
+        connection.commit()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+ensure_driver_schema()
+
+
+# ==========================================
+# ADMIN MODULE DATABASE SETUP
+# ==========================================
+
+def ensure_admin_schema():
+    """Create the admin table when it does not already exist."""
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS admins
+            (
+                id INT NOT NULL AUTO_INCREMENT,
+                name VARCHAR(100) NOT NULL,
+                email VARCHAR(150) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                status VARCHAR(30) NOT NULL DEFAULT 'Active',
+                created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                UNIQUE KEY email (email)
+            )
+            """
+        )
+
+        connection.commit()
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+ensure_admin_schema()
+
+
+# ==========================================
 # EVEASE HOME PAGE
 # ==========================================
 
@@ -246,6 +344,12 @@ def login():
         # CREATE LOGIN SESSION
         # ------------------------------------------
 
+        session.pop("driver_id", None)
+        session.pop("driver_name", None)
+        session.pop("driver_email", None)
+        session.pop("admin_id", None)
+        session.pop("admin_name", None)
+        session.pop("admin_email", None)
         session["owner_id"] = owner["id"]
         session["owner_name"] = owner["name"]
         session["owner_email"] = owner["email"]
@@ -1200,6 +1304,558 @@ def my_bookings():
 
         if connection:
             connection.close()
+
+
+# ==========================================
+# DRIVER LOGIN
+# ==========================================
+
+@app.route("/driver-login", methods=["GET", "POST"])
+def driver_login():
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "admin_id" in session:
+        return redirect("/admin-dashboard")
+
+    if request.method == "GET":
+        return render_template("driver_login.html")
+
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+
+    if not email or not password:
+        return render_template(
+            "auth_message.html",
+            title="Driver Login Failed",
+            message="Please enter your email and password.",
+            name=None,
+            email=None,
+            button_text="Try Again",
+            button_url="/driver-login"
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT id, name, email, password
+            FROM drivers
+            WHERE email = %s
+              AND status = 'Active'
+            """,
+            (email,)
+        )
+
+        driver = cursor.fetchone()
+
+        if not driver or not check_password_hash(driver["password"], password):
+            return render_template(
+                "auth_message.html",
+                title="Driver Login Failed",
+                message="The email address or password you entered is incorrect.",
+                name=None,
+                email=None,
+                button_text="Try Again",
+                button_url="/driver-login"
+            )
+
+        session.pop("owner_id", None)
+        session.pop("owner_name", None)
+        session.pop("owner_email", None)
+        session.pop("admin_id", None)
+        session.pop("admin_name", None)
+        session.pop("admin_email", None)
+        session["driver_id"] = driver["id"]
+        session["driver_name"] = driver["name"]
+        session["driver_email"] = driver["email"]
+
+        return redirect("/driver-dashboard")
+
+    except mysql.connector.Error as error:
+        return f"""
+        <h1>Driver Login Failed</h1>
+        <p>Something went wrong while logging in.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# DRIVER DASHBOARD
+# ==========================================
+
+@app.route("/driver-dashboard")
+def driver_dashboard():
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "driver_id" not in session:
+        return redirect("/driver-login")
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                b.id,
+                b.booking_reference,
+                b.service_type,
+                b.preferred_date,
+                b.preferred_time,
+                b.pickup_address,
+                b.pickup_instructions,
+                b.status,
+                o.name AS owner_name,
+                v.vehicle_number,
+                v.brand,
+                v.model,
+                v.vehicle_type
+            FROM bookings b
+            INNER JOIN owners o ON b.owner_id = o.id
+            INNER JOIN vehicles v ON b.vehicle_id = v.id
+            WHERE b.driver_id = %s
+            ORDER BY b.preferred_date ASC, b.preferred_time ASC
+            """,
+            (session["driver_id"],)
+        )
+
+        bookings = cursor.fetchall()
+        assigned_count = len(bookings)
+        pending_pickup_count = sum(
+            booking["status"] == "Driver Assigned" for booking in bookings
+        )
+        delivered_count = sum(
+            booking["status"] == "Delivered" for booking in bookings
+        )
+
+        return render_template(
+            "driver_dashboard.html",
+            driver_name=session.get("driver_name", "Driver"),
+            bookings=bookings,
+            assigned_count=assigned_count,
+            pending_pickup_count=pending_pickup_count,
+            delivered_count=delivered_count
+        )
+
+    except mysql.connector.Error as error:
+        return f"""
+        <h1>Driver Dashboard Error</h1>
+        <p>Something went wrong while loading assigned requests.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# DRIVER BOOKING STATUS UPDATE
+# ==========================================
+
+@app.route("/driver/update-status/<int:booking_id>", methods=["POST"])
+def driver_update_status(booking_id):
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "driver_id" not in session:
+        return redirect("/driver-login")
+
+    requested_status = request.form.get("status", "").strip()
+    allowed_transitions = {
+        "Driver Assigned": "Picked Up",
+        "Out for Delivery": "Delivered"
+    }
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT id, status
+            FROM bookings
+            WHERE id = %s
+              AND driver_id = %s
+            """,
+            (booking_id, session["driver_id"])
+        )
+
+        booking = cursor.fetchone()
+
+        if not booking:
+            return "Booking not found or not assigned to you.", 403
+
+        expected_status = allowed_transitions.get(booking["status"])
+
+        if not expected_status or requested_status != expected_status:
+            return "Invalid booking status transition.", 400
+
+        cursor.execute(
+            """
+            UPDATE bookings
+            SET status = %s
+            WHERE id = %s
+              AND driver_id = %s
+              AND status = %s
+            """,
+            (
+                requested_status,
+                booking_id,
+                session["driver_id"],
+                booking["status"]
+            )
+        )
+
+        if cursor.rowcount != 1:
+            connection.rollback()
+            return "Booking status could not be updated.", 409
+
+        connection.commit()
+        return redirect("/driver-dashboard")
+
+    except mysql.connector.Error as error:
+        if connection:
+            connection.rollback()
+
+        return f"""
+        <h1>Booking Update Failed</h1>
+        <p>Something went wrong while updating the booking.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# DRIVER LOGOUT
+# ==========================================
+
+@app.route("/driver-logout")
+def driver_logout():
+
+    session.clear()
+    return redirect("/driver-login")
+
+
+# ==========================================
+# ADMIN LOGIN
+# ==========================================
+
+@app.route("/admin-login", methods=["GET", "POST"])
+def admin_login():
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "driver_id" in session:
+        return redirect("/driver-dashboard")
+
+    if request.method == "GET":
+        return render_template("admin_login.html")
+
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+
+    if not email or not password:
+        return render_template(
+            "auth_message.html",
+            title="Admin Login Failed",
+            message="Please enter your email and password.",
+            name=None,
+            email=None,
+            button_text="Try Again",
+            button_url="/admin-login"
+        )
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT id, name, email, password
+            FROM admins
+            WHERE email = %s
+              AND status = 'Active'
+            """,
+            (email,)
+        )
+
+        admin = cursor.fetchone()
+
+        if not admin or not check_password_hash(admin["password"], password):
+            return render_template(
+                "auth_message.html",
+                title="Admin Login Failed",
+                message="The email address or password you entered is incorrect.",
+                name=None,
+                email=None,
+                button_text="Try Again",
+                button_url="/admin-login"
+            )
+
+        session.pop("owner_id", None)
+        session.pop("owner_name", None)
+        session.pop("owner_email", None)
+        session.pop("driver_id", None)
+        session.pop("driver_name", None)
+        session.pop("driver_email", None)
+        session["admin_id"] = admin["id"]
+        session["admin_name"] = admin["name"]
+        session["admin_email"] = admin["email"]
+
+        return redirect("/admin-dashboard")
+
+    except mysql.connector.Error as error:
+        return f"""
+        <h1>Admin Login Failed</h1>
+        <p>Something went wrong while logging in.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# ADMIN DASHBOARD
+# ==========================================
+
+@app.route("/admin-dashboard")
+def admin_dashboard():
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "driver_id" in session:
+        return redirect("/driver-dashboard")
+
+    if "admin_id" not in session:
+        return redirect("/admin-login")
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT
+                b.id,
+                b.booking_reference,
+                b.service_type,
+                b.preferred_date,
+                b.preferred_time,
+                b.pickup_address,
+                b.pickup_instructions,
+                o.name AS owner_name,
+                o.phone AS owner_phone,
+                v.vehicle_number,
+                v.brand,
+                v.model,
+                v.vehicle_type
+            FROM bookings b
+            INNER JOIN owners o ON b.owner_id = o.id
+            INNER JOIN vehicles v ON b.vehicle_id = v.id
+            WHERE b.status = 'Pending'
+              AND b.driver_id IS NULL
+            ORDER BY b.created_at ASC
+            """
+        )
+
+        pending_bookings = cursor.fetchall()
+
+        cursor.execute(
+            """
+            SELECT id, name, email, phone, license_no
+            FROM drivers
+            WHERE status = 'Active'
+            ORDER BY name ASC
+            """
+        )
+
+        active_drivers = cursor.fetchall()
+
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS assigned_bookings
+            FROM bookings
+            WHERE status = 'Driver Assigned'
+            """
+        )
+
+        assigned_count = cursor.fetchone()["assigned_bookings"]
+
+        return render_template(
+            "admin_dashboard.html",
+            admin_name=session.get("admin_name", "Admin"),
+            pending_bookings=pending_bookings,
+            active_drivers=active_drivers,
+            pending_count=len(pending_bookings),
+            assigned_count=assigned_count
+        )
+
+    except mysql.connector.Error as error:
+        return f"""
+        <h1>Admin Dashboard Error</h1>
+        <p>Something went wrong while loading booking assignments.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# ADMIN DRIVER ASSIGNMENT
+# ==========================================
+
+@app.route("/admin/assign-driver/<int:booking_id>", methods=["POST"])
+def admin_assign_driver(booking_id):
+
+    if "owner_id" in session:
+        return redirect("/dashboard")
+
+    if "driver_id" in session:
+        return redirect("/driver-dashboard")
+
+    if "admin_id" not in session:
+        return redirect("/admin-login")
+
+    driver_id = request.form.get("driver_id", "").strip()
+
+    if not driver_id.isdigit():
+        return "Please select a valid active driver.", 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT id
+            FROM bookings
+            WHERE id = %s
+              AND status = 'Pending'
+              AND driver_id IS NULL
+            """,
+            (booking_id,)
+        )
+
+        booking = cursor.fetchone()
+
+        if not booking:
+            return "Booking is not available for driver assignment.", 400
+
+        cursor.execute(
+            """
+            SELECT id
+            FROM drivers
+            WHERE id = %s
+              AND status = 'Active'
+            """,
+            (driver_id,)
+        )
+
+        driver = cursor.fetchone()
+
+        if not driver:
+            return "Selected driver is not available.", 400
+
+        cursor.execute(
+            """
+            UPDATE bookings
+            SET driver_id = %s,
+                status = 'Driver Assigned'
+            WHERE id = %s
+              AND status = 'Pending'
+              AND driver_id IS NULL
+            """,
+            (driver_id, booking_id)
+        )
+
+        if cursor.rowcount != 1:
+            connection.rollback()
+            return "Booking could not be assigned.", 409
+
+        connection.commit()
+        return redirect("/admin-dashboard")
+
+    except mysql.connector.Error as error:
+        if connection:
+            connection.rollback()
+
+        return f"""
+        <h1>Driver Assignment Failed</h1>
+        <p>Something went wrong while assigning the driver.</p>
+        <p>Error: {error}</p>
+        """
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# ADMIN LOGOUT
+# ==========================================
+
+@app.route("/admin-logout")
+def admin_logout():
+
+    session.clear()
+    return redirect("/admin-login")
 
 
 # ==========================================

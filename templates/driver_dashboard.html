@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Driver Dashboard - EVEase{% endblock %}
+
+{% block content %}
+<section class="driver-dashboard-section">
+    <div class="container">
+        <div class="dashboard-welcome mb-4">
+            <div>
+                <span class="my-bookings-eyebrow">DRIVER PORTAL</span>
+                <h2>Welcome, {{ driver_name }}</h2>
+                <p>Manage your assigned pickup and delivery requests.</p>
+            </div>
+            <a href="/driver-logout" class="btn btn-evease-outline">Logout</a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div><h6>Assigned Requests</h6><h3>{{ assigned_count }}</h3></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div><h6>Pending Pickup</h6><h3>{{ pending_pickup_count }}</h3></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div><h6>Completed Deliveries</h6><h3>{{ delivered_count }}</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="driver-panel">
+            <div class="mb-4">
+                <h3>Assigned Service Requests</h3>
+                <p class="text-muted mb-0">Only requests assigned to you are shown here.</p>
+            </div>
+
+            {% if bookings %}
+                <div class="driver-booking-list">
+                    {% for booking in bookings %}
+                        <article class="driver-booking-card">
+                            <div class="driver-booking-header">
+                                <div>
+                                    <span class="booking-reference-label">Booking Reference</span>
+                                    <h4>{{ booking.booking_reference }}</h4>
+                                </div>
+                                <span class="booking-status">{{ booking.status }}</span>
+                            </div>
+
+                            <div class="driver-booking-grid">
+                                <div><span>Customer</span><strong>{{ booking.owner_name }}</strong></div>
+                                <div><span>Vehicle</span><strong>{{ booking.brand }} {{ booking.model }}</strong><small>{{ booking.vehicle_number }} · {{ booking.vehicle_type }}</small></div>
+                                <div><span>Service</span><strong>{{ booking.service_type }}</strong></div>
+                                <div><span>Preferred Schedule</span><strong>{{ booking.preferred_date.strftime('%d %B %Y') }}</strong><small>{{ booking.preferred_time }}</small></div>
+                            </div>
+
+                            <div class="driver-address-box">
+                                <span>Pickup Address</span>
+                                <strong>{{ booking.pickup_address }}</strong>
+                                {% if booking.pickup_instructions %}
+                                    <small>Instructions: {{ booking.pickup_instructions }}</small>
+                                {% endif %}
+                            </div>
+
+                            {% if booking.status == 'Driver Assigned' %}
+                                <form method="POST" action="/driver/update-status/{{ booking.id }}" class="driver-booking-action">
+                                    <input type="hidden" name="status" value="Picked Up">
+                                    <button type="submit" class="btn btn-evease">Mark as Picked Up</button>
+                                </form>
+                            {% elif booking.status == 'Out for Delivery' %}
+                                <form method="POST" action="/driver/update-status/{{ booking.id }}" class="driver-booking-action">
+                                    <input type="hidden" name="status" value="Delivered">
+                                    <button type="submit" class="btn btn-evease">Mark as Delivered</button>
+                                </form>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-bookings">
+                    <h2>No assigned requests</h2>
+                    <p>Assigned pickup and delivery requests will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

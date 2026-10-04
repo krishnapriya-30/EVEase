@@ -902,6 +902,285 @@ body {
 
 }
 
+/* =========================================
+   DRIVER DASHBOARD
+   ========================================= */
+
+.driver-dashboard-section {
+    min-height: 80vh;
+    padding: 55px 0;
+    background-color: #E3EDE0;
+}
+
+.driver-panel {
+    padding: 28px;
+    background-color: #FFFFFF;
+    border: 1px solid #B8CDB4;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(38, 53, 42, 0.06);
+}
+
+.driver-panel h3 {
+    margin-bottom: 7px;
+    color: #26352A;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.driver-booking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.driver-booking-card {
+    padding: 24px;
+    background-color: #F8FBF7;
+    border: 1px solid #D0E1CC;
+    border-radius: 14px;
+}
+
+.driver-booking-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #DDE8DA;
+}
+
+.driver-booking-header h4 {
+    margin: 0;
+    color: #4F6F4A;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.driver-booking-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 20px 0;
+}
+
+.driver-booking-grid > div,
+.driver-address-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px;
+    background-color: #FFFFFF;
+    border: 1px solid #D0E1CC;
+    border-radius: 10px;
+}
+
+.driver-booking-grid span,
+.driver-address-box span {
+    color: #718078;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.driver-booking-grid strong,
+.driver-address-box strong {
+    color: #26352A;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.driver-booking-grid small,
+.driver-address-box small {
+    color: #718078;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.driver-booking-action {
+    margin-top: 18px;
+}
+
+@media (max-width: 992px) {
+    .driver-booking-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .driver-panel,
+    .driver-booking-card {
+        padding: 20px;
+    }
+
+    .driver-booking-header {
+        flex-direction: column;
+    }
+
+    .driver-booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .driver-booking-action .btn {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   ADMIN DASHBOARD
+   ========================================= */
+
+.admin-dashboard-section {
+    min-height: 80vh;
+    padding: 55px 0;
+    background-color: #E3EDE0;
+}
+
+.admin-panel {
+    padding: 28px;
+    background-color: #FFFFFF;
+    border: 1px solid #B8CDB4;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(38, 53, 42, 0.06);
+}
+
+.admin-panel h3 {
+    margin-bottom: 7px;
+    color: #26352A;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.admin-booking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.admin-booking-card {
+    padding: 24px;
+    background-color: #F8FBF7;
+    border: 1px solid #D0E1CC;
+    border-radius: 14px;
+}
+
+.admin-booking-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #DDE8DA;
+}
+
+.admin-booking-header h4 {
+    margin: 0;
+    color: #4F6F4A;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.admin-booking-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 20px 0;
+}
+
+.admin-booking-grid > div,
+.admin-address-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px;
+    background-color: #FFFFFF;
+    border: 1px solid #D0E1CC;
+    border-radius: 10px;
+}
+
+.admin-booking-grid span,
+.admin-address-box span,
+.admin-assignment-form label {
+    color: #718078;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.admin-booking-grid strong,
+.admin-address-box strong {
+    color: #26352A;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.admin-booking-grid small,
+.admin-address-box small {
+    color: #718078;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.admin-assignment-form {
+    margin-top: 18px;
+}
+
+.admin-assignment-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.admin-assignment-controls select {
+    flex: 1;
+    min-height: 42px;
+    padding: 8px 12px;
+    color: #26352A;
+    background-color: #FFFFFF;
+    border: 1px solid #B8CDB4;
+    border-radius: 9px;
+}
+
+.admin-assignment-controls select:focus {
+    outline: none;
+    border-color: #4F6F4A;
+    box-shadow: 0 0 0 0.2rem rgba(79, 111, 74, 0.12);
+}
+
+.admin-no-drivers {
+    margin: 18px 0 0;
+    color: #8A6D1D;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+@media (max-width: 992px) {
+    .admin-booking-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-panel,
+    .admin-booking-card {
+        padding: 20px;
+    }
+
+    .admin-booking-header,
+    .admin-assignment-controls {
+        flex-direction: column;
+    }
+
+    .admin-booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-assignment-controls .btn {
+        width: 100%;
+    }
+}
+
 /* ==========================================
    AUTH RESULT PAGE
 ========================================== */
